@@ -8,8 +8,11 @@ extern "C" {
 #include"./SDL2-2.0.10/include/SDL_main.h"
 }
 
-#define SCREEN_WIDTH	1111//777
-#define SCREEN_HEIGHT	585
+#define SCREEN_WIDTH	777//888//777//777/1111
+#define SCREEN_HEIGHT	585//666//585
+#define MARGIN	144//size of ther player
+#define STAGE_WIDTH	SCREEN_WIDTH*2//777/1111
+#define STAGE_HEIGHT	SCREEN_HEIGHT*2
 #define ENEMY_X 544
 #define ENEMY_Y 144
 #define LOW_SPEED 1.412
@@ -19,6 +22,11 @@ extern "C" {
 #define ARROW_JUMP 12//position jum after pressing an arrow
 #define PLAYER_X SCREEN_WIDTH / 2
 #define PLAYER_Y SCREEN_HEIGHT / 2
+#define NB_OF_LEVELS 3
+#define NB_OF_BULLETS 6
+#define FULL_CIRCLE 360
+#define DEG_JUMP FULL_CIRCLE / NB_OF_BULLETS
+
 
 enum direction {
 	LEFT,
@@ -120,7 +128,7 @@ void freeingFun(SDL_Renderer* renderer, SDL_Window* window, SDL_Texture* scrtex,
 
 
 // obs³uga zdarzeñ (o ile jakieœ zasz³y) / handling of events (if there were any)
-void handlingEvents(int* quit, int* new_game, double* etiSpeed, SDL_Event& event, spirits* player) {
+void handlingEvents(int* quit, int* new_game, double* etiSpeed, SDL_Event& event, spirits* player, double* horizontal_shift, double* vertical_shift) {
 	while (SDL_PollEvent(&event)) {
 		switch (event.type) {
 		case SDL_KEYDOWN:
@@ -129,30 +137,82 @@ void handlingEvents(int* quit, int* new_game, double* etiSpeed, SDL_Event& event
 			else if (event.key.keysym.sym == SDLK_f) *etiSpeed = HIGH_SPEED;
 			else if (event.key.keysym.sym == SDLK_s) *etiSpeed = LOW_SPEED;
 			else if (event.key.keysym.sym == SDLK_LEFT) {
-				player->x -= ARROW_JUMP;
+				//player->x -= ARROW_JUMP;
+				/*if (player->x + *horizontal_shift < STAGE_WIDTH) {
+					if (player->x - MARGIN < 0) {
+						*horizontal_shift += ARROW_JUMP;
+					}
+					else {
+						player->x -= ARROW_JUMP;
+					}
+				}*/
+				if (player->x - *horizontal_shift + MARGIN > 0) {
+					*horizontal_shift += ARROW_JUMP;
+					player->x -= ARROW_JUMP / 2;
+				}
 				player->side = LEFT;
 			}
 			else if (event.key.keysym.sym == SDLK_RIGHT) {
-				player->x += ARROW_JUMP;
+				//player->x += ARROW_JUMP;
+				/*if (player->x - *horizontal_shift < STAGE_WIDTH) {
+					if (player->x + MARGIN > SCREEN_WIDTH) {
+						*horizontal_shift -= ARROW_JUMP;
+					}
+					else {
+						player->x += ARROW_JUMP;
+					}
+				}*/
+				if (player->x - *horizontal_shift + MARGIN < STAGE_WIDTH) {
+					if (player->x < STAGE_WIDTH) {
+						*horizontal_shift -= ARROW_JUMP;
+						player->x += ARROW_JUMP / 2;
+					}
+				}
 				player->side = RIGHT;
 			}
 			else if (event.key.keysym.sym == SDLK_UP) {
-				player->y -= ARROW_JUMP;
+				//player->y -= ARROW_JUMP;
+				/*if (player->y + *vertical_shift < STAGE_HEIGHT) {
+					if (player->y - MARGIN < 0) {
+						*vertical_shift += ARROW_JUMP;
+					}
+					else {
+						player->y -= ARROW_JUMP;
+					}
+				}*/
+				if (player->y + *vertical_shift - MARGIN < STAGE_HEIGHT) {
+					*vertical_shift += ARROW_JUMP;
+					player->y -= ARROW_JUMP / 2;
+				}
 				player->side = UP;
 			}
 			else if (event.key.keysym.sym == SDLK_DOWN) {
-				player->y += ARROW_JUMP;
+				//player->y += ARROW_JUMP;
+				/*if (player->y - *vertical_shift < STAGE_HEIGHT) {
+					if (player->y + MARGIN > SCREEN_HEIGHT) {
+						*vertical_shift -= ARROW_JUMP;
+					}
+					else {
+						player->y += ARROW_JUMP;
+					}
+				}*/
+				if (player->y - *vertical_shift + MARGIN < STAGE_HEIGHT) {
+					*vertical_shift -= ARROW_JUMP;
+					player->y += ARROW_JUMP / 2;
+				}
 				player->side = DOWN;
 			}
 			break;
 		case SDL_KEYUP:
 			*etiSpeed = USUAL_SPEED;
+			player->side = RIGHT;
 			break;
 		case SDL_QUIT:
 			*quit = 1;
 			break;
 		}
 	}
+	printf("x: %f, y: %f, vert: %f, hor: %f\n", player->x, player->y, *vertical_shift, *horizontal_shift);
 }
 
 
@@ -178,11 +238,11 @@ void timeFlow(double* delta, int* t1, int t2, double* worldTime, double fps) {
 
 
 void makeFPSconstant(double delta) {
-	/*if ((1000 / FPS_CONST) > delta) {
+	if ((1000 / FPS_CONST) > delta) {
 		SDL_Delay(1000 / FPS_CONST - delta);
 		//printf("%f\n", delta);
-	}*/
-	SDL_Delay(1000 / FPS_CONST);
+	}
+	//SDL_Delay(1000 / FPS_CONST);
 }
 
 
@@ -218,7 +278,7 @@ int isIn(int a, int b, double x) {
 
 //check if object is outside the sreen
 int outOfScreen(double x, double y) {
-	if ((isIn(0, SCREEN_HEIGHT, y) && isIn(0, SCREEN_WIDTH, x)) == 0) {
+	if ((isIn(0, STAGE_HEIGHT, y) && isIn(0, STAGE_WIDTH, x)) == 0) {
 		return 1;
 	}
 	return 0;
@@ -239,61 +299,75 @@ void movem(spirits* bullet, point initial, double speed) {
 }
 
 
+//draw border lines
+void drawBorders(double horizontal_shift, double vertical_shift, int czerwony, SDL_Surface* screen, spirits player) {
+	//RIGHT
+	if (player.x * 2 - horizontal_shift > STAGE_WIDTH) {
+		DrawLine(screen, SCREEN_WIDTH - 1, 1, SCREEN_HEIGHT - 1, 0, 1, czerwony);
+	}
+	//LEFT
+	if (player.x * 2 + horizontal_shift < 0) {
+		DrawLine(screen, 1, 1, SCREEN_HEIGHT - 1, 0, 1, czerwony);
+	}
+	//BOTTOM
+	if (player.y * 2 - vertical_shift > STAGE_HEIGHT) {
+		DrawLine(screen, 1, SCREEN_HEIGHT - 1, SCREEN_WIDTH - 1, 1, 0, czerwony);
+	}
+}
+
+
 //looping through frames and events
 void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int* t2, double* worldTime, double* distance, double* etiSpeed,
 	SDL_Surface* screen, SDL_Renderer* renderer, SDL_Surface* eti, SDL_Surface* etiL, SDL_Surface* yellow_dot, SDL_Surface* pink_dot, SDL_Surface* charset, SDL_Texture* scrtex, int moj_kolor, int niebieski,
-	int czerwony, double* fpsTimer, int* frames, double* fps, char text[], double* delta, SDL_Event& event, SDL_Surface* etis[]) {
+	int czerwony, double* fpsTimer, int* frames, double* fps, char text[], double* delta, SDL_Event& event, SDL_Surface* etis[], SDL_Surface* texture) {
+	double horizontal_shift = 0;
+	double vertical_shift = 0;
+	spirits enemies[NB_OF_LEVELS];
 	point initial = { ENEMY_X , ENEMY_Y };
+	spirits bullets[NB_OF_LEVELS][NB_OF_BULLETS];
 
 	spirits bullet = { ENEMY_X , ENEMY_Y , 1, RIGHT };
 	spirits bullet2 = { ENEMY_X , ENEMY_Y , -1, RIGHT };
 	spirits first = bullet;
 	spirits player = { PLAYER_X , PLAYER_Y , -1, RIGHT };
-	double en_x = ENEMY_X;
-	double en_y = ENEMY_Y;
-	double moving_en_x = ENEMY_X;
-	double moving_en_y = ENEMY_Y;
-	double moving_bullet_x = ENEMY_X;
-	double moving_bullet_y = ENEMY_Y;
+
 	while (!*quit) {
 		*t2 = SDL_GetTicks();
-		//if n pressed
+		//if n pressed then new game
 		if (*new_game) {
 			*worldTime = 0;
 			*new_game = false;
-			*distance = 0;
-			*x_pos = PLAYER_X;
-			*y_pos = PLAYER_Y;
-			en_y = ENEMY_Y;
-			en_x = ENEMY_X;
-			moving_en_x = ENEMY_X;
-			moving_en_y = ENEMY_Y;
-			moving_bullet_x = ENEMY_X;
-			moving_bullet_y = ENEMY_Y;
+
+			for (int i = 0; i < NB_OF_LEVELS; i++) {
+				enemies[i] = { ENEMY_X , ENEMY_Y, 1, RIGHT };
+			}
 
 			bullet.x = bullet2.x = first.x = initial.x;
 			bullet.y = bullet2.y = first.y = initial.y;
 			first.side = RIGHT;
 			player = { PLAYER_X , PLAYER_Y , -1, RIGHT };
+			horizontal_shift = vertical_shift = 0;
 		}
 
 		timeFlow(delta, t1, *t2, worldTime, *fps);
-		*distance += *etiSpeed * *delta;
 
+		//draw stage
 		SDL_FillRect(screen, NULL, moj_kolor);
+		drawBorders(horizontal_shift, vertical_shift, czerwony, screen, player);
+		//NO-no-No DrawSurface(screen, texture, NULL, NULL);
+
 		//player
 		DrawSurface(screen, etis[player.side], player.x, player.y);
-
 		//static enemy
-		DrawSurface(screen, etis[first.side], first.x, first.y);
+		DrawSurface(screen, etis[first.side], first.x + horizontal_shift, first.y + vertical_shift);
 		//enemy - bullet
-		DrawSurface(screen, yellow_dot, bullet.x, bullet.y);
+		DrawSurface(screen, yellow_dot, bullet.x + horizontal_shift, bullet.y + vertical_shift);
 		movem(&bullet, initial, *etiSpeed);
-		DrawSurface(screen, yellow_dot, bullet2.x, bullet2.y);
+		DrawSurface(screen, yellow_dot, bullet2.x + horizontal_shift, bullet2.y + vertical_shift);
 		movem(&bullet2, initial, LOW_SPEED);
-
-		DrawSurface(screen, pink_dot, bullet2.y, bullet2.x);
+		DrawSurface(screen, pink_dot, bullet2.y + horizontal_shift, bullet2.x + vertical_shift);
 		//movem(&bullet3, initial, LOW_SPEED);
+
 		if (*worldTime > 24) {
 			movem(&bullet2, initial, HIGH_SPEED);
 			int wt = *worldTime;
@@ -307,12 +381,73 @@ void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int*
 
 		fpsTiming(*delta, fpsTimer, frames, fps);
 		textWriting(czerwony, niebieski, text, screen, charset, *worldTime, *fps);
-		updatingCanva(renderer, scrtex, screen);
-
-		handlingEvents(quit, new_game, etiSpeed, event, &player);
+		updatingCanva(renderer, scrtex, screen);//renderer, scrtex, screen
+		handlingEvents(quit, new_game, etiSpeed, event, &player, &horizontal_shift, &vertical_shift);
 		makeFPSconstant(*delta);
 		(*frames)++;
 	}
+}
+
+
+//load images
+int loadBMPs(SDL_Surface* etis[], SDL_Surface** yellow_dot, SDL_Surface** pink_dot, SDL_Renderer* renderer, SDL_Window* window, SDL_Texture* scrtex, SDL_Surface* screen, SDL_Surface** charset) {
+	// wczytanie obrazka cs8x8.bmp
+	*charset = SDL_LoadBMP("./cs8x8.bmp");
+	if (charset == NULL) {
+		printf("SDL_LoadBMP(cs8x8.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 1;
+	}
+
+	etis[RIGHT] = SDL_LoadBMP("./eti.bmp");
+	if (etis[RIGHT] == NULL) {
+		printf("SDL_LoadBMP(eti.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+
+	etis[EVIL] = SDL_LoadBMP("./devileti.bmp");
+	if (etis[EVIL] == NULL) {
+		printf("SDL_LoadBMP(devileti.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+
+	etis[LEFT] = SDL_LoadBMP("./etiL.bmp");
+	if (etis[LEFT] == NULL) {
+		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+
+	etis[UP] = SDL_LoadBMP("./etiU.bmp");
+	if (etis[UP] == NULL) {
+		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+
+	etis[DOWN] = SDL_LoadBMP("./etiD.bmp");
+	if (etis[DOWN] == NULL) {
+		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+
+	*yellow_dot = SDL_LoadBMP("./yellow.bmp");
+	if (*yellow_dot == NULL) {
+		printf("SDL_LoadBMP(yellow.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+
+	*pink_dot = SDL_LoadBMP("./pink.bmp");
+	if (*pink_dot == NULL) {
+		printf("SDL_LoadBMP(pink.bmp) error: %s\n", SDL_GetError());
+		freeingFun(renderer, window, scrtex, screen, *charset);
+		return 0;
+	}
+	return 1;
 }
 
 
@@ -324,8 +459,8 @@ int main(int argc, char** argv) {
 	int t1, t2, quit, new_game, frames, rc, x_pos, y_pos;
 	double delta, worldTime, fpsTimer, fps, distance, etiSpeed;
 	SDL_Event event;
-	SDL_Surface* screen, * charset;
-	SDL_Surface* eti, * yellow_dot, * pink_dot, * etiL, * devil;
+	SDL_Surface* screen, * charset = NULL;
+	SDL_Surface* eti, * yellow_dot = NULL, * pink_dot = NULL, * etiL, * devil;
 	SDL_Texture* scrtex;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -368,85 +503,44 @@ int main(int argc, char** argv) {
 	// wy³¹czenie widocznoœci kursora myszy
 	SDL_ShowCursor(SDL_DISABLE);
 
-	// wczytanie obrazka cs8x8.bmp
-	charset = SDL_LoadBMP("./cs8x8.bmp");
-	if (charset == NULL) {
-		printf("SDL_LoadBMP(cs8x8.bmp) error: %s\n", SDL_GetError());
+	if (loadBMPs(etis, &yellow_dot, &pink_dot, renderer, window, scrtex, screen, &charset)) {
+		SDL_SetColorKey(charset, true, 0x000000);
+
+		char text[128];
+		int rgb[] = { SDL_MapRGB(screen->format, 0x00, 0x00, 0x00), SDL_MapRGB(screen->format, 0x00, 0xFF, 0x00),
+			SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00), SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00), SDL_MapRGB(screen->format, 0x11, 0x11, 0xCC) };
+		int moj_kolor = SDL_MapRGB(screen->format, 0x01, 0x44, 0x44);
+		int czarny = SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
+		int zielony = SDL_MapRGB(screen->format, 0x00, 0xFF, 0x00);
+		int czerwony = SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00);
+		int niebieski = SDL_MapRGB(screen->format, 0x11, 0x11, 0xCC);
+
+		t1 = SDL_GetTicks();
+		frames = 0;
+		fpsTimer = 0;
+		fps = 0;
+		quit = 0;
+		etiSpeed = 1;
+		new_game = 1;
+
+		SDL_Surface* background = SDL_LoadBMP("./tlo.bmp");
+		if (background == NULL)
+		{
+			printf("SDL_LoadBMP(pink.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, charset);
+			return 1;
+		}
+		SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, background);
+		//screen = SDL_CreateTextureFromSurface(renderer, background);
+
+		SDL_RenderCopy(renderer, texture, NULL, NULL);
+		SDL_RenderPresent(renderer);
+
+		playControl(&quit, &new_game, &x_pos, &y_pos, &t1, &t2, &worldTime, &distance, &etiSpeed, screen, renderer, etis[RIGHT], etis[LEFT], yellow_dot, pink_dot, charset, scrtex,
+			rgb[0], rgb[4], rgb[3], &fpsTimer, &frames, &fps, text, &delta, event, etis, background);
+
 		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
 	}
-	SDL_SetColorKey(charset, true, 0x000000);
-
-	etis[RIGHT] = SDL_LoadBMP("./eti.bmp");
-	if (etis[RIGHT] == NULL) {
-		printf("SDL_LoadBMP(eti.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	etis[EVIL] = SDL_LoadBMP("./devileti.bmp");
-	if (etis[EVIL] == NULL) {
-		printf("SDL_LoadBMP(devileti.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	etis[LEFT] = SDL_LoadBMP("./etiL.bmp");
-	if (etis[LEFT] == NULL) {
-		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	etis[UP] = SDL_LoadBMP("./etiU.bmp");
-	if (etis[UP] == NULL) {
-		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	etis[DOWN] = SDL_LoadBMP("./etiD.bmp");
-	if (etis[DOWN] == NULL) {
-		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	yellow_dot = SDL_LoadBMP("./yellow.bmp");
-	if (yellow_dot == NULL) {
-		printf("SDL_LoadBMP(yellow.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	pink_dot = SDL_LoadBMP("./pink.bmp");
-	if (yellow_dot == NULL) {
-		printf("SDL_LoadBMP(pink.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, charset);
-		return 1;
-	}
-
-	//SDL_Surface* pictures[] = { eti, devil, etiL, yellow_dot, pink_dot };
-
-	char text[128];
-	int moj_kolor = SDL_MapRGB(screen->format, 0x01, 0x44, 0x44);
-	int czarny = SDL_MapRGB(screen->format, 0x00, 0x00, 0x00);
-	int zielony = SDL_MapRGB(screen->format, 0x00, 0xFF, 0x00);
-	int czerwony = SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00);
-	int niebieski = SDL_MapRGB(screen->format, 0x11, 0x11, 0xCC);
-
-	t1 = SDL_GetTicks();
-	frames = 0;
-	fpsTimer = 0;
-	fps = 0;
-	quit = 0;
-	etiSpeed = 1;
-	new_game = 1;
-
-	playControl(&quit, &new_game, &x_pos, &y_pos, &t1, &t2, &worldTime, &distance, &etiSpeed, screen, renderer, etis[RIGHT], etis[LEFT], yellow_dot, pink_dot, charset, scrtex,
-		czarny, niebieski, czerwony, &fpsTimer, &frames, &fps, text, &delta, event, etis);
-
-	freeingFun(renderer, window, scrtex, screen, charset);
 	SDL_Quit();
 	return 0;
 }
