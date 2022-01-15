@@ -272,6 +272,8 @@ void handlingEvents(int* quit, int* new_game, int* level, double* etiSpeed, SDL_
 		case SDL_KEYUP:
 			*etiSpeed = USUAL_SPEED;
 			player->side = RIGHT;
+			//screen_borders[RIGHT] += changeR;
+			//screen_borders[LEFT] += changeL;
 			break;
 		case SDL_QUIT:
 			*quit = 1;
@@ -374,6 +376,66 @@ void moveObject2(spirits* bullet, point initial, double speed, int level, double
 			a *= -1;
 		}
 	}
+	else {*/
+	bullet->x += -speed;//bullet->a *
+	bullet->y += bullet->a * bullet->x;
+	//}
+}
+
+
+
+//euklidean distance
+double dist(point a, point b) {
+	double p = a.x - b.x;
+	double q = a.y - b.y;
+	return sqrt(p * p + q * q);
+}
+
+
+//linear move of bullets
+void movem2(spirits* bullet, point initial, double speed, int cox, int coy) {
+	//if (outOfStage(bullet->x, bullet->y)) {
+	/*if (cox > 0 && coy > 0 && (bullet->x >= STAGE_WIDTH || bullet->y >= STAGE_HEIGHT)) {//RD
+		printf("RD%fx%f\n", bullet->x, bullet->y);
+		bullet->x = initial.x;
+		bullet->y = initial.y;
+	}
+	else if (cox < 0 && coy>0 && (bullet->x <= 0 || bullet->y >= STAGE_HEIGHT)) {//LD
+		printf("LD%fx%f\n", bullet->x, bullet->y);
+		bullet->x = initial.x;
+		bullet->y = initial.y;
+	}
+	else if (cox > 0 && coy < 0 && (bullet->x >= STAGE_WIDTH || bullet->y <= 0)) {//RU
+		printf("RU%fx%f\n", bullet->x, bullet->y);
+		bullet->x = initial.x;
+		bullet->y = initial.y;
+	}
+	else if (cox < 0 && coy < 0 && (bullet->x <= 0 || bullet->y <= 0)) {//LU
+		printf("LU%fx%f\n", bullet->x, bullet->y);
+		bullet->x = initial.x;
+		bullet->y = initial.y;
+	}*/
+	point p = { bullet->x, bullet->y };//bullet
+	point q = { ENEMY_X, ENEMY_Y };//enemy
+	point e = { MARGIN, MARGINUP };//edge
+	if (dist(p, q) >= dist(q, e)) {//if path bullet-enemy > path edge-enemy
+		int xx = bullet->x;
+		int yy = bullet->y;
+		//printf("RD%fx%f\n", bullet->x, bullet->y);
+		printf("%dx%d\n\n", xx, yy);
+		bullet->x = initial.x;
+		bullet->y = initial.y;
+	}
+	/*if (bullet->x > STAGE_WIDTH || bullet->y > STAGE_HEIGHT || (bullet->x < -STAGE_WIDTH && cox < 0 && coy < 0)) {
+		//if (bullet->y < 0) {
+		//bullet->a *= -1;
+		//
+		//if (cox < 0 && coy < 0) {
+		printf("%fx%f\n", bullet->x, bullet->y);
+		//}
+		bullet->x = initial.x;
+		bullet->y = initial.y;
+	}*/
 	else {
 		double dx = bullet->cox * speed;//x++ or x--
 		bullet->x += dx;
@@ -406,6 +468,104 @@ void drawBorders(double horizontal_shift, double vertical_shift, int czerwony, S
 	if (player.y - vertical_shift + MARGIN >= STAGE_HEIGHT) {
 		DrawLine(screen, 1, SCREEN_HEIGHT - 1, SCREEN_WIDTH - 1, 1, 0, czerwony);
 	}
+}
+
+
+//run 1. level
+void firstLevel(SDL_Surface* screen, double* horizontal_shift, double* vertical_shift, double* worldTime, double* etiSpeed, SDL_Surface* etis[],
+	SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first, double screen_borders[]) {
+	//static enemy
+	DrawSurface(screen, etis[first->side], first->x + *horizontal_shift, first->y + *vertical_shift);
+	//enemy - bullets
+	for (int i = 0; i < NB_OF_BULLETS; i++) {
+		/*if (isIn(screen_borders[LEFT], screen_borders[RIGHT], bullets[i].x + *horizontal_shift) == 1 &&
+			isIn(screen_borders[UP], screen_borders[DOWN], bullets[i].y + *vertical_shift) == 1) {
+			DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+		}*/
+		DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+		DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + *horizontal_shift, bullets[i].y * FACTOR + *vertical_shift);
+		DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + *vertical_shift);
+		//DrawSurface(screen, yellow_dot, bullets[i].x * -FACTOR + *horizontal_shift, bullets[i].y * -FACTOR + *vertical_shift);
+		DrawSurface(screen, yellow_dot, ENEMY_X + *horizontal_shift, bullets[i].y + *vertical_shift);
+		DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, ENEMY_Y + *vertical_shift);
+		switch (i)
+		{
+		case 0:
+			movem2(&bullets[i], initial, *etiSpeed, 1, 1);
+			break;
+		case 1:
+			movem2(&bullets[i], initial, *etiSpeed, 1, -1);
+			break;
+		case 2:
+			movem2(&bullets[i], initial, *etiSpeed, -1, 1);
+			break;
+		case 3:
+			movem2(&bullets[i], initial, *etiSpeed, -1, -1);
+			break;
+		default:
+			break;
+		}
+		//printf("%d: %fx%f\n", i, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+	}
+	/*
+	//enemy - bullet
+	DrawSurface(screen, yellow_dot, bullets[0].x + *horizontal_shift, bullets[0].y + *vertical_shift);
+	movem(&bullets[0], initial, *etiSpeed);
+	DrawSurface(screen, yellow_dot, bullets[1].x + *horizontal_shift, bullets[1].y + *vertical_shift);
+	movem(&(bullets[1]), initial, LOW_SPEED);
+	DrawSurface(screen, pink_dot, bullets[1].y + *horizontal_shift, bullets[1].x + *vertical_shift);*/
+	//movem(&bullet3, initial, LOW_SPEED);
+	if (*worldTime > EVTIME) {
+		//movem(bullets + 1, initial, HIGH_SPEED);
+		int wt = *worldTime;
+		if (wt % 2) {
+			first->side = RIGHT;
+		}
+		else {
+			first->side = EVIL;
+		}
+	}
+}
+
+
+//new game = if "n" pressed - set up initial values
+void setUpNewGame(double* horizontal_shift, double* vertical_shift, double* worldTime, int* new_game, spirits enemies[], spirits* player,
+	double screen_borders[], spirits bullets[][NB_OF_BULLETS], int level) {
+	*worldTime = 0;
+	*new_game = false;
+
+	for (int i = 0; i < NB_OF_LEVELS; i++) {
+		enemies[i] = { ENEMY_X , ENEMY_Y, 1, RIGHT };
+	}
+
+	bullets[0][0].x = bullets[0][1].x = enemies[level].x = enemies[level].x;
+	bullets[0][0].y = bullets[0][1].y = enemies[level].y = enemies[level].y;
+	bullets[0][0] = { ENEMY_X , ENEMY_Y , 1, RIGHT };
+	bullets[0][1] = { ENEMY_X , ENEMY_Y , 1, RIGHT };//-
+	bullets[0][2] = { ENEMY_X , ENEMY_Y , 1, RIGHT };
+	bullets[0][3] = { ENEMY_X , ENEMY_Y , 1, RIGHT };//-
+	enemies[level].side = RIGHT;
+	*player = { PLAYER_X , PLAYER_Y , -1, RIGHT };
+	*horizontal_shift = *vertical_shift = 0;
+	screen_borders[LEFT] = SCREEN_WIDTH / 3;
+	screen_borders[UP] = MARGINUP * 3;
+	screen_borders[RIGHT] = SCREEN_WIDTH * 2.0 / 3;
+	screen_borders[DOWN] = SCREEN_HEIGHT * 4.0 / 5;
+}
+
+
+//draw stage - background and borders
+void drawStage(SDL_Surface* screen, int colours[], SDL_Surface* texture, double horizontal_shift, double vertical_shift, spirits player) {
+	SDL_FillRect(screen, NULL, colours[BLACK]);
+	//drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
+	//NO-no-No  yes
+	//DrawSurface(screen, texture, MARGINUP + horizontal_shift, MARGINUP + vertical_shift);
+	for (int j = -STAGE_HEIGHT / BACK_Y; j < STAGE_HEIGHT / BACK_Y * 2; j++) {//for every row
+		for (int i = -STAGE_WIDTH / BACK_X; i < STAGE_WIDTH / BACK_X * 2; i++) {//for every 'column' in a row 
+			DrawSurface(screen, texture, -0 + horizontal_shift + BACK_X * i, MARGINUP + vertical_shift + BACK_Y * j);
+		}
+	}
+	drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
 }
 
 
@@ -533,6 +693,7 @@ void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int*
 	int level = 1;
 	spirits enemies[NB_OF_LEVELS];
 	point initial = { ENEMY_X , ENEMY_Y };
+
 	spirits bullets[NB_OF_LEVELS][NB_OF_BULLETS];
 	enemies[0] = bullets[0][0];
 	spirits player = { PLAYER_X , PLAYER_Y , 1,1, RIGHT };
@@ -554,6 +715,8 @@ void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int*
 
 		levelChoice(level, screen, horizontal_shift, vertical_shift, *worldTime, *etiSpeed, etis, yellow_dot, pink_dot, initial, bullets,
 			enemies, screen_borders);
+
+		//DrawPixel(screen, SCREEN_WIDTH-1, SCREEN_HEIGHT-1, colours[BLUE]);
 
 		fpsTiming(*delta, fpsTimer, frames, fps);
 		textWriting(colours[RED], colours[BLUE], text, screen, charset, *worldTime, *fps);
