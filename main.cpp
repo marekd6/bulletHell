@@ -376,524 +376,525 @@ void moveObject2(spirits* bullet, point initial, double speed, int level, double
 			a *= -1;
 		}
 	}
-	else {*/
-	bullet->x += -speed;//bullet->a *
-	bullet->y += bullet->a * bullet->x;
-	//}
-}
-
-
-
-//euklidean distance
-double dist(point a, point b) {
-	double p = a.x - b.x;
-	double q = a.y - b.y;
-	return sqrt(p * p + q * q);
-}
-
-
-//linear move of bullets
-void movem2(spirits* bullet, point initial, double speed, int cox, int coy) {
-	//if (outOfStage(bullet->x, bullet->y)) {
-	/*if (cox > 0 && coy > 0 && (bullet->x >= STAGE_WIDTH || bullet->y >= STAGE_HEIGHT)) {//RD
-		printf("RD%fx%f\n", bullet->x, bullet->y);
-		bullet->x = initial.x;
-		bullet->y = initial.y;
-	}
-	else if (cox < 0 && coy>0 && (bullet->x <= 0 || bullet->y >= STAGE_HEIGHT)) {//LD
-		printf("LD%fx%f\n", bullet->x, bullet->y);
-		bullet->x = initial.x;
-		bullet->y = initial.y;
-	}
-	else if (cox > 0 && coy < 0 && (bullet->x >= STAGE_WIDTH || bullet->y <= 0)) {//RU
-		printf("RU%fx%f\n", bullet->x, bullet->y);
-		bullet->x = initial.x;
-		bullet->y = initial.y;
-	}
-	else if (cox < 0 && coy < 0 && (bullet->x <= 0 || bullet->y <= 0)) {//LU
-		printf("LU%fx%f\n", bullet->x, bullet->y);
-		bullet->x = initial.x;
-		bullet->y = initial.y;
-	}*/
-	point p = { bullet->x, bullet->y };//bullet
-	point q = { ENEMY_X, ENEMY_Y };//enemy
-	point e = { MARGIN, MARGINUP };//edge
-	if (dist(p, q) >= dist(q, e)) {//if path bullet-enemy > path edge-enemy
-		int xx = bullet->x;
-		int yy = bullet->y;
-		//printf("RD%fx%f\n", bullet->x, bullet->y);
-		printf("%dx%d\n\n", xx, yy);
-		bullet->x = initial.x;
-		bullet->y = initial.y;
-	}
-	/*if (bullet->x > STAGE_WIDTH || bullet->y > STAGE_HEIGHT || (bullet->x < -STAGE_WIDTH && cox < 0 && coy < 0)) {
-		//if (bullet->y < 0) {
-		//bullet->a *= -1;
-		//
-		//if (cox < 0 && coy < 0) {
-		printf("%fx%f\n", bullet->x, bullet->y);
+	else {
+		*/
+			bullet->x += -speed;//bullet->a *
+		bullet->y += bullet->a * bullet->x;
 		//}
-		bullet->x = initial.x;
-		bullet->y = initial.y;
-	}*/
-	else {
-		double dx = bullet->cox * speed;//x++ or x--
-		bullet->x += dx;
-		switch (level)
-		{
-		case 1:
-			bullet->y += bullet->coy * dx;//y-- or y++
-			break;
-		case 2:
-			bullet->y += bullet->coy * dx * a / bullet->x * cos(wt) + sin(wt) * dx;
-			break;
-		default:
-			break;
+	}
+
+
+
+	//euklidean distance
+	double dist(point a, point b) {
+		double p = a.x - b.x;
+		double q = a.y - b.y;
+		return sqrt(p * p + q * q);
+	}
+
+
+	//linear move of bullets
+	void movem2(spirits * bullet, point initial, double speed, int cox, int coy) {
+		//if (outOfStage(bullet->x, bullet->y)) {
+		/*if (cox > 0 && coy > 0 && (bullet->x >= STAGE_WIDTH || bullet->y >= STAGE_HEIGHT)) {//RD
+			printf("RD%fx%f\n", bullet->x, bullet->y);
+			bullet->x = initial.x;
+			bullet->y = initial.y;
 		}
-	}
-}
-
-
-//draw border lines
-void drawBorders(double horizontal_shift, double vertical_shift, int czerwony, SDL_Surface* screen, spirits player) {
-	//RIGHT
-	if (player.x - horizontal_shift + MARGIN + ARROW_JUMP >= STAGE_WIDTH) {
-		DrawLine(screen, SCREEN_WIDTH - 1, 1, SCREEN_HEIGHT - 1, 0, 1, czerwony);
-	}
-	//LEFT
-	if (player.x + horizontal_shift + MARGIN + ARROW_JUMP >= STAGE_WIDTH) {
-		DrawLine(screen, 1, 1, SCREEN_HEIGHT - 1, 0, 1, czerwony);
-	}
-	//BOTTOM
-	if (player.y - vertical_shift + MARGIN >= STAGE_HEIGHT) {
-		DrawLine(screen, 1, SCREEN_HEIGHT - 1, SCREEN_WIDTH - 1, 1, 0, czerwony);
-	}
-}
-
-
-//run 1. level
-void firstLevel(SDL_Surface* screen, double* horizontal_shift, double* vertical_shift, double* worldTime, double* etiSpeed, SDL_Surface* etis[],
-	SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first, double screen_borders[]) {
-	//static enemy
-	DrawSurface(screen, etis[first->side], first->x + *horizontal_shift, first->y + *vertical_shift);
-	//enemy - bullets
-	for (int i = 0; i < NB_OF_BULLETS; i++) {
-		/*if (isIn(screen_borders[LEFT], screen_borders[RIGHT], bullets[i].x + *horizontal_shift) == 1 &&
-			isIn(screen_borders[UP], screen_borders[DOWN], bullets[i].y + *vertical_shift) == 1) {
-			DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+		else if (cox < 0 && coy>0 && (bullet->x <= 0 || bullet->y >= STAGE_HEIGHT)) {//LD
+			printf("LD%fx%f\n", bullet->x, bullet->y);
+			bullet->x = initial.x;
+			bullet->y = initial.y;
+		}
+		else if (cox > 0 && coy < 0 && (bullet->x >= STAGE_WIDTH || bullet->y <= 0)) {//RU
+			printf("RU%fx%f\n", bullet->x, bullet->y);
+			bullet->x = initial.x;
+			bullet->y = initial.y;
+		}
+		else if (cox < 0 && coy < 0 && (bullet->x <= 0 || bullet->y <= 0)) {//LU
+			printf("LU%fx%f\n", bullet->x, bullet->y);
+			bullet->x = initial.x;
+			bullet->y = initial.y;
 		}*/
-		DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + *horizontal_shift, bullets[i].y * FACTOR + *vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + *vertical_shift);
-		//DrawSurface(screen, yellow_dot, bullets[i].x * -FACTOR + *horizontal_shift, bullets[i].y * -FACTOR + *vertical_shift);
-		DrawSurface(screen, yellow_dot, ENEMY_X + *horizontal_shift, bullets[i].y + *vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, ENEMY_Y + *vertical_shift);
-		switch (i)
+		point p = { bullet->x, bullet->y };//bullet
+		point q = { ENEMY_X, ENEMY_Y };//enemy
+		point e = { MARGIN, MARGINUP };//edge
+		if (dist(p, q) >= dist(q, e)) {//if path bullet-enemy > path edge-enemy
+			int xx = bullet->x;
+			int yy = bullet->y;
+			//printf("RD%fx%f\n", bullet->x, bullet->y);
+			printf("%dx%d\n\n", xx, yy);
+			bullet->x = initial.x;
+			bullet->y = initial.y;
+		}
+		/*if (bullet->x > STAGE_WIDTH || bullet->y > STAGE_HEIGHT || (bullet->x < -STAGE_WIDTH && cox < 0 && coy < 0)) {
+			//if (bullet->y < 0) {
+			//bullet->a *= -1;
+			//
+			//if (cox < 0 && coy < 0) {
+			printf("%fx%f\n", bullet->x, bullet->y);
+			//}
+			bullet->x = initial.x;
+			bullet->y = initial.y;
+		}*/
+		else {
+			double dx = bullet->cox * speed;//x++ or x--
+			bullet->x += dx;
+			switch (level)
+			{
+			case 1:
+				bullet->y += bullet->coy * dx;//y-- or y++
+				break;
+			case 2:
+				bullet->y += bullet->coy * dx * a / bullet->x * cos(wt) + sin(wt) * dx;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+
+	//draw border lines
+	void drawBorders(double horizontal_shift, double vertical_shift, int czerwony, SDL_Surface * screen, spirits player) {
+		//RIGHT
+		if (player.x - horizontal_shift + MARGIN + ARROW_JUMP >= STAGE_WIDTH) {
+			DrawLine(screen, SCREEN_WIDTH - 1, 1, SCREEN_HEIGHT - 1, 0, 1, czerwony);
+		}
+		//LEFT
+		if (player.x + horizontal_shift + MARGIN + ARROW_JUMP >= STAGE_WIDTH) {
+			DrawLine(screen, 1, 1, SCREEN_HEIGHT - 1, 0, 1, czerwony);
+		}
+		//BOTTOM
+		if (player.y - vertical_shift + MARGIN >= STAGE_HEIGHT) {
+			DrawLine(screen, 1, SCREEN_HEIGHT - 1, SCREEN_WIDTH - 1, 1, 0, czerwony);
+		}
+	}
+
+
+	//run 1. level
+	void firstLevel(SDL_Surface * screen, double* horizontal_shift, double* vertical_shift, double* worldTime, double* etiSpeed, SDL_Surface * etis[],
+		SDL_Surface * yellow_dot, SDL_Surface * pink_dot, point initial, spirits bullets[], spirits * first, double screen_borders[]) {
+		//static enemy
+		DrawSurface(screen, etis[first->side], first->x + *horizontal_shift, first->y + *vertical_shift);
+		//enemy - bullets
+		for (int i = 0; i < NB_OF_BULLETS; i++) {
+			/*if (isIn(screen_borders[LEFT], screen_borders[RIGHT], bullets[i].x + *horizontal_shift) == 1 &&
+				isIn(screen_borders[UP], screen_borders[DOWN], bullets[i].y + *vertical_shift) == 1) {
+				DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+			}*/
+			DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + *horizontal_shift, bullets[i].y * FACTOR + *vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + *vertical_shift);
+			//DrawSurface(screen, yellow_dot, bullets[i].x * -FACTOR + *horizontal_shift, bullets[i].y * -FACTOR + *vertical_shift);
+			DrawSurface(screen, yellow_dot, ENEMY_X + *horizontal_shift, bullets[i].y + *vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x + *horizontal_shift, ENEMY_Y + *vertical_shift);
+			switch (i)
+			{
+			case 0:
+				movem2(&bullets[i], initial, *etiSpeed, 1, 1);
+				break;
+			case 1:
+				movem2(&bullets[i], initial, *etiSpeed, 1, -1);
+				break;
+			case 2:
+				movem2(&bullets[i], initial, *etiSpeed, -1, 1);
+				break;
+			case 3:
+				movem2(&bullets[i], initial, *etiSpeed, -1, -1);
+				break;
+			default:
+				break;
+			}
+			//printf("%d: %fx%f\n", i, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
+		}
+		/*
+		//enemy - bullet
+		DrawSurface(screen, yellow_dot, bullets[0].x + *horizontal_shift, bullets[0].y + *vertical_shift);
+		movem(&bullets[0], initial, *etiSpeed);
+		DrawSurface(screen, yellow_dot, bullets[1].x + *horizontal_shift, bullets[1].y + *vertical_shift);
+		movem(&(bullets[1]), initial, LOW_SPEED);
+		DrawSurface(screen, pink_dot, bullets[1].y + *horizontal_shift, bullets[1].x + *vertical_shift);*/
+		//movem(&bullet3, initial, LOW_SPEED);
+		if (*worldTime > EVTIME) {
+			//movem(bullets + 1, initial, HIGH_SPEED);
+			int wt = *worldTime;
+			if (wt % 2) {
+				first->side = RIGHT;
+			}
+			else {
+				first->side = EVIL;
+			}
+		}
+	}
+
+
+	//new game = if "n" pressed - set up initial values
+	void setUpNewGame(double* horizontal_shift, double* vertical_shift, double* worldTime, int* new_game, spirits enemies[], spirits * player,
+		double screen_borders[], spirits bullets[][NB_OF_BULLETS], int level) {
+		*worldTime = 0;
+		*new_game = false;
+
+		for (int i = 0; i < NB_OF_LEVELS; i++) {
+			enemies[i] = { ENEMY_X , ENEMY_Y, 1, RIGHT };
+		}
+
+		bullets[0][0].x = bullets[0][1].x = enemies[level].x = enemies[level].x;
+		bullets[0][0].y = bullets[0][1].y = enemies[level].y = enemies[level].y;
+		bullets[0][0] = { ENEMY_X , ENEMY_Y , 1, RIGHT };
+		bullets[0][1] = { ENEMY_X , ENEMY_Y , 1, RIGHT };//-
+		bullets[0][2] = { ENEMY_X , ENEMY_Y , 1, RIGHT };
+		bullets[0][3] = { ENEMY_X , ENEMY_Y , 1, RIGHT };//-
+		enemies[level].side = RIGHT;
+		*player = { PLAYER_X , PLAYER_Y , -1, RIGHT };
+		*horizontal_shift = *vertical_shift = 0;
+		screen_borders[LEFT] = SCREEN_WIDTH / 3;
+		screen_borders[UP] = MARGINUP * 3;
+		screen_borders[RIGHT] = SCREEN_WIDTH * 2.0 / 3;
+		screen_borders[DOWN] = SCREEN_HEIGHT * 4.0 / 5;
+	}
+
+
+	//draw stage - background and borders
+	void drawStage(SDL_Surface * screen, int colours[], SDL_Surface * texture, double horizontal_shift, double vertical_shift, spirits player) {
+		SDL_FillRect(screen, NULL, colours[BLACK]);
+		//drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
+		//NO-no-No  yes
+		//DrawSurface(screen, texture, MARGINUP + horizontal_shift, MARGINUP + vertical_shift);
+		for (int j = -STAGE_HEIGHT / BACK_Y; j < STAGE_HEIGHT / BACK_Y * 2; j++) {//for every row
+			for (int i = -STAGE_WIDTH / BACK_X; i < STAGE_WIDTH / BACK_X * 2; i++) {//for every 'column' in a row 
+				DrawSurface(screen, texture, -0 + horizontal_shift + BACK_X * i, MARGINUP + vertical_shift + BACK_Y * j);
+			}
+		}
+		drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
+	}
+
+
+	//run 1. level
+	void firstLevel(SDL_Surface * screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed, SDL_Surface * etis[],
+		SDL_Surface * yellow_dot, SDL_Surface * pink_dot, point initial, spirits bullets[], spirits * first_en, double screen_borders[]) {
+		//static enemy
+		DrawSurface(screen, etis[first_en->side], first_en->x + horizontal_shift, first_en->y + vertical_shift);
+		//enemy - bullets
+		for (int i = 0; i < NB_OF_BULLETS; i++) {
+			//draw bullet
+			DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
+			DrawSurface(screen, yellow_dot, ENEMY_X + horizontal_shift, bullets[i].y + vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
+			//move bullet
+			moveObject2(&bullets[i], initial, etiSpeed, 1, worldTime);
+		}
+		if (worldTime > EVTIME) {
+			int wt = worldTime;
+			if (wt % 2) {
+				first_en->side = RIGHT;
+			}
+			else {
+				first_en->side = EVIL;
+			}
+		}
+	}
+
+
+	//run 2. level
+	void secondLevel(SDL_Surface * screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed, SDL_Surface * etis[],
+		SDL_Surface * yellow_dot, SDL_Surface * pink_dot, point initial, spirits bullets[], spirits * first_en, double screen_borders[]) {
+		//static enemy
+		DrawSurface(screen, etis[first_en->side], first_en->x + horizontal_shift, first_en->y + vertical_shift);
+		//enemy - bullets
+		for (int i = 0; i < NB_OF_BULLETS; i++) {
+			//draw bullet
+			DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
+			DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
+			//move bullet
+			moveObject2(&bullets[i], initial, etiSpeed, 2, worldTime);
+		}
+		if (worldTime > EVTIME) {
+			int wt = worldTime;
+			if (wt % 2) {
+				first_en->side = RIGHT;
+				etiSpeed *= HIGH_SPEED;
+			}
+			else {
+				first_en->side = EVIL;
+				etiSpeed /= LOW_SPEED;
+			}
+		}
+	}
+
+
+	//new game = if "n" pressed - set up initial values
+	void setUpNewGame(double* horizontal_shift, double* vertical_shift, double* worldTime, int* new_game, spirits enemies[], spirits * player,
+		double screen_borders[], spirits bullets[][NB_OF_BULLETS], int level) {
+		*worldTime = 0;
+		*new_game = false;
+
+		//set bullets initial positions and direction of movement
+		for (int i = 0; i < NB_OF_LEVELS; i++) {
+			int a, b;
+			a = b = 1;
+			enemies[i].x = ENEMY_X;
+			enemies[i].y = ENEMY_Y;
+			for (int j = 0; j < NB_OF_BULLETS; j++) {
+				bullets[i][j].x = ENEMY_X;
+				bullets[i][j].y = ENEMY_Y;
+				bullets[i][j].cox = a;
+				bullets[i][j].coy = b;
+				b *= -a;
+				a *= -1;
+			}
+		}
+
+		enemies[level].side = RIGHT;
+		*player = { PLAYER_X , PLAYER_Y , 1, 1, RIGHT };
+		*horizontal_shift = *vertical_shift = 0;
+	}
+
+
+	//draw stage - background and borders
+	void drawStage(SDL_Surface * screen, int colours[], SDL_Surface * texture, double horizontal_shift, double vertical_shift, spirits player) {
+		SDL_FillRect(screen, NULL, colours[BLACK]);
+		for (int j = -STAGE_HEIGHT / BACK_Y; j < STAGE_HEIGHT / BACK_Y * 2; j++) {//for every row
+			for (int i = -STAGE_WIDTH / BACK_X; i < STAGE_WIDTH / BACK_X * 2; i++) {//for every 'column' in a row 
+				DrawSurface(screen, texture, -0 + horizontal_shift + BACK_X * i, MARGINUP + vertical_shift + BACK_Y * j);
+			}
+		}
+		drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
+	}
+
+
+	//choose correct level function
+	void levelChoice(int level, SDL_Surface * screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed,
+		SDL_Surface * etis[], SDL_Surface * yellow_dot, SDL_Surface * pink_dot, point initial, spirits bullets[][NB_OF_BULLETS], spirits * enemies,
+		double screen_borders[]) {
+		if (level == 1) {
+			firstLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, yellow_dot, pink_dot, initial,
+				bullets[0], &enemies[0], screen_borders);
+		}
+		else {
+			//etiSpeed = LOW_SPEED;
+			secondLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, yellow_dot, pink_dot, initial,
+				bullets[0], &enemies[0], screen_borders);
+		}
+	}
+
+
+	//looping through frames and events
+	void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int* t2, double* worldTime, double* distance, double* etiSpeed,
+		SDL_Surface * screen, SDL_Renderer * renderer, SDL_Surface * yellow_dot, SDL_Surface * pink_dot, SDL_Surface * charset, SDL_Texture * scrtex, int colours[],
+		double* fpsTimer, int* frames, double* fps, char text[], double* delta, SDL_Event & event, SDL_Surface * etis[], SDL_Surface * textures[]) {
+
+		double horizontal_shift = 0;
+		double vertical_shift = 0;
+		double screen_borders[NB_OF_DIRECTIONS] = { SCREEN_WIDTH / 3 , SCREEN_WIDTH * 2 / 3 , MARGINUP * 3, SCREEN_HEIGHT * 4 / 5 };
+		int level = 1;
+		spirits enemies[NB_OF_LEVELS];
+		point initial = { ENEMY_X , ENEMY_Y };
+
+		spirits bullets[NB_OF_LEVELS][NB_OF_BULLETS];
+		enemies[0] = bullets[0][0];
+		spirits player = { PLAYER_X , PLAYER_Y , 1,1, RIGHT };
+
+		while (!*quit) {
+			*t2 = SDL_GetTicks();
+			timeFlow(delta, t1, *t2, worldTime, *fps);
+
+			//if n pressed then new game
+			if (*new_game) {
+				setUpNewGame(&horizontal_shift, &vertical_shift, worldTime, new_game, enemies, &player, screen_borders, bullets, level - 1);
+			}
+
+			//stage
+			drawStage(screen, colours, textures[level - 1], horizontal_shift, vertical_shift, player);
+
+			//player
+			DrawSurface(screen, etis[player.side], player.x, player.y);
+
+			levelChoice(level, screen, horizontal_shift, vertical_shift, *worldTime, *etiSpeed, etis, yellow_dot, pink_dot, initial, bullets,
+				enemies, screen_borders);
+
+			//DrawPixel(screen, SCREEN_WIDTH-1, SCREEN_HEIGHT-1, colours[BLUE]);
+
+			fpsTiming(*delta, fpsTimer, frames, fps);
+			textWriting(colours[RED], colours[BLUE], text, screen, charset, *worldTime, *fps);
+			updatingCanva(renderer, scrtex, screen);//renderer, scrtex, screen
+			handlingEvents(quit, new_game, &level, etiSpeed, event, &player, &horizontal_shift, &vertical_shift, screen_borders);
+			makeFPSconstant(*delta);
+			(*frames)++;
+		}
+	}
+
+
+	//load images
+	int loadBMPs(SDL_Surface * etis[], SDL_Surface * *yellow_dot, SDL_Surface * *pink_dot, SDL_Surface * background[],
+		SDL_Renderer * renderer, SDL_Window * window, SDL_Texture * scrtex, SDL_Surface * screen, SDL_Surface * *charset) {
+		// wczytanie obrazka cs8x8.bmp
+		*charset = SDL_LoadBMP("./cs8x8.bmp");
+		if (charset == NULL) {
+			printf("SDL_LoadBMP(cs8x8.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 1;
+		}
+
+		etis[RIGHT] = SDL_LoadBMP("./eti.bmp");
+		if (etis[RIGHT] == NULL) {
+			printf("SDL_LoadBMP(eti.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		etis[EVIL] = SDL_LoadBMP("./devileti.bmp");
+		if (etis[EVIL] == NULL) {
+			printf("SDL_LoadBMP(devileti.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		etis[LEFT] = SDL_LoadBMP("./etiL.bmp");
+		if (etis[LEFT] == NULL) {
+			printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		etis[UP] = SDL_LoadBMP("./etiU.bmp");
+		if (etis[UP] == NULL) {
+			printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		etis[DOWN] = SDL_LoadBMP("./etiD.bmp");
+		if (etis[DOWN] == NULL) {
+			printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		*yellow_dot = SDL_LoadBMP("./yellow.bmp");
+		if (*yellow_dot == NULL) {
+			printf("SDL_LoadBMP(yellow.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		*pink_dot = SDL_LoadBMP("./pink.bmp");
+		if (*pink_dot == NULL) {
+			printf("SDL_LoadBMP(pink.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
+
+		background[0] = SDL_LoadBMP("./backgr.bmp");
+		if (background[0] == NULL)
 		{
-		case 0:
-			movem2(&bullets[i], initial, *etiSpeed, 1, 1);
-			break;
-		case 1:
-			movem2(&bullets[i], initial, *etiSpeed, 1, -1);
-			break;
-		case 2:
-			movem2(&bullets[i], initial, *etiSpeed, -1, 1);
-			break;
-		case 3:
-			movem2(&bullets[i], initial, *etiSpeed, -1, -1);
-			break;
-		default:
-			break;
-		}
-		//printf("%d: %fx%f\n", i, bullets[i].x + *horizontal_shift, bullets[i].y + *vertical_shift);
-	}
-	/*
-	//enemy - bullet
-	DrawSurface(screen, yellow_dot, bullets[0].x + *horizontal_shift, bullets[0].y + *vertical_shift);
-	movem(&bullets[0], initial, *etiSpeed);
-	DrawSurface(screen, yellow_dot, bullets[1].x + *horizontal_shift, bullets[1].y + *vertical_shift);
-	movem(&(bullets[1]), initial, LOW_SPEED);
-	DrawSurface(screen, pink_dot, bullets[1].y + *horizontal_shift, bullets[1].x + *vertical_shift);*/
-	//movem(&bullet3, initial, LOW_SPEED);
-	if (*worldTime > EVTIME) {
-		//movem(bullets + 1, initial, HIGH_SPEED);
-		int wt = *worldTime;
-		if (wt % 2) {
-			first->side = RIGHT;
-		}
-		else {
-			first->side = EVIL;
-		}
-	}
-}
-
-
-//new game = if "n" pressed - set up initial values
-void setUpNewGame(double* horizontal_shift, double* vertical_shift, double* worldTime, int* new_game, spirits enemies[], spirits* player,
-	double screen_borders[], spirits bullets[][NB_OF_BULLETS], int level) {
-	*worldTime = 0;
-	*new_game = false;
-
-	for (int i = 0; i < NB_OF_LEVELS; i++) {
-		enemies[i] = { ENEMY_X , ENEMY_Y, 1, RIGHT };
-	}
-
-	bullets[0][0].x = bullets[0][1].x = enemies[level].x = enemies[level].x;
-	bullets[0][0].y = bullets[0][1].y = enemies[level].y = enemies[level].y;
-	bullets[0][0] = { ENEMY_X , ENEMY_Y , 1, RIGHT };
-	bullets[0][1] = { ENEMY_X , ENEMY_Y , 1, RIGHT };//-
-	bullets[0][2] = { ENEMY_X , ENEMY_Y , 1, RIGHT };
-	bullets[0][3] = { ENEMY_X , ENEMY_Y , 1, RIGHT };//-
-	enemies[level].side = RIGHT;
-	*player = { PLAYER_X , PLAYER_Y , -1, RIGHT };
-	*horizontal_shift = *vertical_shift = 0;
-	screen_borders[LEFT] = SCREEN_WIDTH / 3;
-	screen_borders[UP] = MARGINUP * 3;
-	screen_borders[RIGHT] = SCREEN_WIDTH * 2.0 / 3;
-	screen_borders[DOWN] = SCREEN_HEIGHT * 4.0 / 5;
-}
-
-
-//draw stage - background and borders
-void drawStage(SDL_Surface* screen, int colours[], SDL_Surface* texture, double horizontal_shift, double vertical_shift, spirits player) {
-	SDL_FillRect(screen, NULL, colours[BLACK]);
-	//drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
-	//NO-no-No  yes
-	//DrawSurface(screen, texture, MARGINUP + horizontal_shift, MARGINUP + vertical_shift);
-	for (int j = -STAGE_HEIGHT / BACK_Y; j < STAGE_HEIGHT / BACK_Y * 2; j++) {//for every row
-		for (int i = -STAGE_WIDTH / BACK_X; i < STAGE_WIDTH / BACK_X * 2; i++) {//for every 'column' in a row 
-			DrawSurface(screen, texture, -0 + horizontal_shift + BACK_X * i, MARGINUP + vertical_shift + BACK_Y * j);
-		}
-	}
-	drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
-}
-
-
-//run 1. level
-void firstLevel(SDL_Surface* screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed, SDL_Surface* etis[],
-	SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first_en, double screen_borders[]) {
-	//static enemy
-	DrawSurface(screen, etis[first_en->side], first_en->x + horizontal_shift, first_en->y + vertical_shift);
-	//enemy - bullets
-	for (int i = 0; i < NB_OF_BULLETS; i++) {
-		//draw bullet
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, ENEMY_X + horizontal_shift, bullets[i].y + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
-		//move bullet
-		moveObject2(&bullets[i], initial, etiSpeed, 1, worldTime);
-	}
-	if (worldTime > EVTIME) {
-		int wt = worldTime;
-		if (wt % 2) {
-			first_en->side = RIGHT;
-		}
-		else {
-			first_en->side = EVIL;
-		}
-	}
-}
-
-
-//run 2. level
-void secondLevel(SDL_Surface* screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed, SDL_Surface* etis[],
-	SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first_en, double screen_borders[]) {
-	//static enemy
-	DrawSurface(screen, etis[first_en->side], first_en->x + horizontal_shift, first_en->y + vertical_shift);
-	//enemy - bullets
-	for (int i = 0; i < NB_OF_BULLETS; i++) {
-		//draw bullet
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
-		//move bullet
-		moveObject2(&bullets[i], initial, etiSpeed, 2, worldTime);
-	}
-	if (worldTime > EVTIME) {
-		int wt = worldTime;
-		if (wt % 2) {
-			first_en->side = RIGHT;
-			etiSpeed *= HIGH_SPEED;
-		}
-		else {
-			first_en->side = EVIL;
-			etiSpeed /= LOW_SPEED;
-		}
-	}
-}
-
-
-//new game = if "n" pressed - set up initial values
-void setUpNewGame(double* horizontal_shift, double* vertical_shift, double* worldTime, int* new_game, spirits enemies[], spirits* player,
-	double screen_borders[], spirits bullets[][NB_OF_BULLETS], int level) {
-	*worldTime = 0;
-	*new_game = false;
-
-	//set bullets initial positions and direction of movement
-	for (int i = 0; i < NB_OF_LEVELS; i++) {
-		int a, b;
-		a = b = 1;
-		enemies[i].x = ENEMY_X;
-		enemies[i].y = ENEMY_Y;
-		for (int j = 0; j < NB_OF_BULLETS; j++) {
-			bullets[i][j].x = ENEMY_X;
-			bullets[i][j].y = ENEMY_Y;
-			bullets[i][j].cox = a;
-			bullets[i][j].coy = b;
-			b *= -a;
-			a *= -1;
-		}
-	}
-
-	enemies[level].side = RIGHT;
-	*player = { PLAYER_X , PLAYER_Y , 1, 1, RIGHT };
-	*horizontal_shift = *vertical_shift = 0;
-}
-
-
-//draw stage - background and borders
-void drawStage(SDL_Surface* screen, int colours[], SDL_Surface* texture, double horizontal_shift, double vertical_shift, spirits player) {
-	SDL_FillRect(screen, NULL, colours[BLACK]);
-	for (int j = -STAGE_HEIGHT / BACK_Y; j < STAGE_HEIGHT / BACK_Y * 2; j++) {//for every row
-		for (int i = -STAGE_WIDTH / BACK_X; i < STAGE_WIDTH / BACK_X * 2; i++) {//for every 'column' in a row 
-			DrawSurface(screen, texture, -0 + horizontal_shift + BACK_X * i, MARGINUP + vertical_shift + BACK_Y * j);
-		}
-	}
-	drawBorders(horizontal_shift, vertical_shift, colours[RED], screen, player);
-}
-
-
-//choose correct level function
-void levelChoice(int level, SDL_Surface* screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed,
-	SDL_Surface* etis[], SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[][NB_OF_BULLETS], spirits* enemies,
-	double screen_borders[]) {
-	if (level == 1) {
-		firstLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, yellow_dot, pink_dot, initial,
-			bullets[0], &enemies[0], screen_borders);
-	}
-	else {
-		//etiSpeed = LOW_SPEED;
-		secondLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, yellow_dot, pink_dot, initial,
-			bullets[0], &enemies[0], screen_borders);
-	}
-}
-
-
-//looping through frames and events
-void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int* t2, double* worldTime, double* distance, double* etiSpeed,
-	SDL_Surface* screen, SDL_Renderer* renderer, SDL_Surface* yellow_dot, SDL_Surface* pink_dot, SDL_Surface* charset, SDL_Texture* scrtex, int colours[],
-	double* fpsTimer, int* frames, double* fps, char text[], double* delta, SDL_Event& event, SDL_Surface* etis[], SDL_Surface* textures[]) {
-
-	double horizontal_shift = 0;
-	double vertical_shift = 0;
-	double screen_borders[NB_OF_DIRECTIONS] = { SCREEN_WIDTH / 3 , SCREEN_WIDTH * 2 / 3 , MARGINUP * 3, SCREEN_HEIGHT * 4 / 5 };
-	int level = 1;
-	spirits enemies[NB_OF_LEVELS];
-	point initial = { ENEMY_X , ENEMY_Y };
-
-	spirits bullets[NB_OF_LEVELS][NB_OF_BULLETS];
-	enemies[0] = bullets[0][0];
-	spirits player = { PLAYER_X , PLAYER_Y , 1,1, RIGHT };
-
-	while (!*quit) {
-		*t2 = SDL_GetTicks();
-		timeFlow(delta, t1, *t2, worldTime, *fps);
-
-		//if n pressed then new game
-		if (*new_game) {
-			setUpNewGame(&horizontal_shift, &vertical_shift, worldTime, new_game, enemies, &player, screen_borders, bullets, level - 1);
+			printf("SDL_LoadBMP(backgr.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
 		}
 
-		//stage
-		drawStage(screen, colours, textures[level - 1], horizontal_shift, vertical_shift, player);
+		background[1] = SDL_LoadBMP("./backgr1.bmp");
+		if (background[1] == NULL)
+		{
+			printf("SDL_LoadBMP(backgr1.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
 
-		//player
-		DrawSurface(screen, etis[player.side], player.x, player.y);
+		background[2] = SDL_LoadBMP("./backgr2.bmp");
+		if (background[2] == NULL)
+		{
+			printf("SDL_LoadBMP(backgr2.bmp) error: %s\n", SDL_GetError());
+			freeingFun(renderer, window, scrtex, screen, *charset);
+			return 0;
+		}
 
-		levelChoice(level, screen, horizontal_shift, vertical_shift, *worldTime, *etiSpeed, etis, yellow_dot, pink_dot, initial, bullets,
-			enemies, screen_borders);
-
-		//DrawPixel(screen, SCREEN_WIDTH-1, SCREEN_HEIGHT-1, colours[BLUE]);
-
-		fpsTiming(*delta, fpsTimer, frames, fps);
-		textWriting(colours[RED], colours[BLUE], text, screen, charset, *worldTime, *fps);
-		updatingCanva(renderer, scrtex, screen);//renderer, scrtex, screen
-		handlingEvents(quit, new_game, &level, etiSpeed, event, &player, &horizontal_shift, &vertical_shift, screen_borders);
-		makeFPSconstant(*delta);
-		(*frames)++;
-	}
-}
-
-
-//load images
-int loadBMPs(SDL_Surface* etis[], SDL_Surface** yellow_dot, SDL_Surface** pink_dot, SDL_Surface* background[],
-	SDL_Renderer* renderer, SDL_Window* window, SDL_Texture* scrtex, SDL_Surface* screen, SDL_Surface** charset) {
-	// wczytanie obrazka cs8x8.bmp
-	*charset = SDL_LoadBMP("./cs8x8.bmp");
-	if (charset == NULL) {
-		printf("SDL_LoadBMP(cs8x8.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
 		return 1;
 	}
 
-	etis[RIGHT] = SDL_LoadBMP("./eti.bmp");
-	if (etis[RIGHT] == NULL) {
-		printf("SDL_LoadBMP(eti.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
 
-	etis[EVIL] = SDL_LoadBMP("./devileti.bmp");
-	if (etis[EVIL] == NULL) {
-		printf("SDL_LoadBMP(devileti.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	etis[LEFT] = SDL_LoadBMP("./etiL.bmp");
-	if (etis[LEFT] == NULL) {
-		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	etis[UP] = SDL_LoadBMP("./etiU.bmp");
-	if (etis[UP] == NULL) {
-		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	etis[DOWN] = SDL_LoadBMP("./etiD.bmp");
-	if (etis[DOWN] == NULL) {
-		printf("SDL_LoadBMP(etiL.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	*yellow_dot = SDL_LoadBMP("./yellow.bmp");
-	if (*yellow_dot == NULL) {
-		printf("SDL_LoadBMP(yellow.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	*pink_dot = SDL_LoadBMP("./pink.bmp");
-	if (*pink_dot == NULL) {
-		printf("SDL_LoadBMP(pink.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	background[0] = SDL_LoadBMP("./backgr.bmp");
-	if (background[0] == NULL)
-	{
-		printf("SDL_LoadBMP(backgr.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	background[1] = SDL_LoadBMP("./backgr1.bmp");
-	if (background[1] == NULL)
-	{
-		printf("SDL_LoadBMP(backgr1.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	background[2] = SDL_LoadBMP("./backgr2.bmp");
-	if (background[2] == NULL)
-	{
-		printf("SDL_LoadBMP(backgr2.bmp) error: %s\n", SDL_GetError());
-		freeingFun(renderer, window, scrtex, screen, *charset);
-		return 0;
-	}
-
-	return 1;
-}
-
-
-// main
+	// main
 #ifdef __cplusplus
-extern "C"
+	extern "C"
 #endif
-int main(int argc, char** argv) {
-	int t1, t2, quit, new_game, frames, rc, x_pos, y_pos;
-	double delta, worldTime, fpsTimer, fps, distance, etiSpeed;
-	SDL_Event event;
-	SDL_Surface* screen, * charset = NULL;
-	SDL_Surface* etis[6], * yellow_dot = NULL, * pink_dot = NULL, * backgrounds[NB_OF_LEVELS];
-	SDL_Texture* scrtex;
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+		int main(int argc, char** argv) {
+		int t1, t2, quit, new_game, frames, rc, x_pos, y_pos;
+		double delta, worldTime, fpsTimer, fps, distance, etiSpeed;
+		SDL_Event event;
+		SDL_Surface* screen, * charset = NULL;
+		SDL_Surface* etis[6], * yellow_dot = NULL, * pink_dot = NULL, * backgrounds[NB_OF_LEVELS];
+		SDL_Texture* scrtex;
+		SDL_Window* window;
+		SDL_Renderer* renderer;
 
-	// okno konsoli nie jest widoczne, je¿eli chcemy zobaczyæ
-	// komunikaty wypisywane printf-em trzeba w opcjach:
-	// project -> szablon2 properties -> Linker -> System -> Subsystem
-	// zmieniæ na "Console"
-	printf("wyjscie printfa trafia do tego okienka\n");
+		// okno konsoli nie jest widoczne, je¿eli chcemy zobaczyæ
+		// komunikaty wypisywane printf-em trzeba w opcjach:
+		// project -> szablon2 properties -> Linker -> System -> Subsystem
+		// zmieniæ na "Console"
+		printf("wyjscie printfa trafia do tego okienka\n");
 
-	if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-		printf("SDL_Init error: %s\n", SDL_GetError());
-		return 1;
-	}
+		if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+			printf("SDL_Init error: %s\n", SDL_GetError());
+			return 1;
+		}
 
-	// tryb pe³noekranowy / fullscreen mode
-//	rc = SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP,
-//	                                 &window, &renderer);
-	rc = SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &window, &renderer);
-	if (rc != 0) {
+		// tryb pe³noekranowy / fullscreen mode
+	//	rc = SDL_CreateWindowAndRenderer(0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP,
+	//	                                 &window, &renderer);
+		rc = SDL_CreateWindowAndRenderer(SCREEN_WIDTH, SCREEN_HEIGHT, 0, &window, &renderer);
+		if (rc != 0) {
+			SDL_Quit();
+			printf("SDL_CreateWindowAndRenderer error: %s\n", SDL_GetError());
+			return 1;
+		}
+
+		SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+		SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
+		//SDL_RenderSetLogicalSize(renderer, STAGE_WIDTH, STAGE_HEIGHT);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+		SDL_SetWindowTitle(window, "Bullet Hell MD");
+
+		screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32,
+			0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+
+		scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
+			SDL_TEXTUREACCESS_STREAMING,
+			SCREEN_WIDTH, SCREEN_HEIGHT);
+
+		// wy³¹czenie widocznoœci kursora myszy
+		SDL_ShowCursor(SDL_DISABLE);
+
+		if (loadBMPs(etis, &yellow_dot, &pink_dot, backgrounds, renderer, window, scrtex, screen, &charset)) {
+			SDL_SetColorKey(charset, true, 0x000000);
+
+			char text[128];
+			int rgb[] = { SDL_MapRGB(screen->format, 0x00, 0x00, 0x00),
+				SDL_MapRGB(screen->format, 0x00, 0xFF, 0x00),
+				SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00),
+				SDL_MapRGB(screen->format, 0x11, 0x11, 0xCC) };
+			int moj_kolor = SDL_MapRGB(screen->format, 0x01, 0x44, 0x44);
+
+			t1 = SDL_GetTicks();
+			frames = 0;
+			fpsTimer = 0;
+			fps = 0;
+			quit = 0;
+			etiSpeed = USUAL_SPEED;
+			new_game = 1;
+
+			SDL_RenderCopy(renderer, scrtex, NULL, NULL);
+			SDL_RenderPresent(renderer);
+
+			playControl(&quit, &new_game, &x_pos, &y_pos, &t1, &t2, &worldTime, &distance, &etiSpeed, screen, renderer,
+				yellow_dot, pink_dot, charset, scrtex, rgb, &fpsTimer, &frames, &fps, text, &delta, event, etis, backgrounds);
+
+			freeingFun(renderer, window, scrtex, screen, charset);
+		}
 		SDL_Quit();
-		printf("SDL_CreateWindowAndRenderer error: %s\n", SDL_GetError());
-		return 1;
+		return 0;
 	}
-
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
-	SDL_RenderSetLogicalSize(renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-	//SDL_RenderSetLogicalSize(renderer, STAGE_WIDTH, STAGE_HEIGHT);
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-
-	SDL_SetWindowTitle(window, "Bullet Hell MD");
-
-	screen = SDL_CreateRGBSurface(0, SCREEN_WIDTH, SCREEN_HEIGHT, 32,
-		0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
-
-	scrtex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
-		SDL_TEXTUREACCESS_STREAMING,
-		SCREEN_WIDTH, SCREEN_HEIGHT);
-
-	// wy³¹czenie widocznoœci kursora myszy
-	SDL_ShowCursor(SDL_DISABLE);
-
-	if (loadBMPs(etis, &yellow_dot, &pink_dot, backgrounds, renderer, window, scrtex, screen, &charset)) {
-		SDL_SetColorKey(charset, true, 0x000000);
-
-		char text[128];
-		int rgb[] = { SDL_MapRGB(screen->format, 0x00, 0x00, 0x00),
-			SDL_MapRGB(screen->format, 0x00, 0xFF, 0x00),
-			SDL_MapRGB(screen->format, 0xFF, 0x00, 0x00),
-			SDL_MapRGB(screen->format, 0x11, 0x11, 0xCC) };
-		int moj_kolor = SDL_MapRGB(screen->format, 0x01, 0x44, 0x44);
-
-		t1 = SDL_GetTicks();
-		frames = 0;
-		fpsTimer = 0;
-		fps = 0;
-		quit = 0;
-		etiSpeed = USUAL_SPEED;
-		new_game = 1;
-
-		SDL_RenderCopy(renderer, scrtex, NULL, NULL);
-		SDL_RenderPresent(renderer);
-
-		playControl(&quit, &new_game, &x_pos, &y_pos, &t1, &t2, &worldTime, &distance, &etiSpeed, screen, renderer,
-			yellow_dot, pink_dot, charset, scrtex, rgb, &fpsTimer, &frames, &fps, text, &delta, event, etis, backgrounds);
-
-		freeingFun(renderer, window, scrtex, screen, charset);
-	}
-	SDL_Quit();
-	return 0;
-}
