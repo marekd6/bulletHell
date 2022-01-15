@@ -9,11 +9,11 @@ extern "C" {
 }
 
 #define SCREEN_WIDTH	888//width of the window888
-#define SCREEN_HEIGHT	585//height of the window585
+#define SCREEN_HEIGHT	666//height of the window585
 #define MARGIN			44//size of ther player
-#define STAGE_WIDTH		SCREEN_WIDTH*4//width of the expanded stage
-#define STAGE_HEIGHT	SCREEN_HEIGHT*4//height of the expanded stage
-#define ENEMY_X			544//initial x coordinate of the enemy 1
+#define STAGE_WIDTH		SCREEN_WIDTH*3//width of the expanded stage
+#define STAGE_HEIGHT	SCREEN_HEIGHT*3//height of the expanded stage
+#define ENEMY_X			244//initial x coordinate of the enemy 1  544
 #define ENEMY_Y			144//initial y coordinate of the enemy 1
 #define LOW_SPEED		1.412
 #define USUAL_SPEED		3.141592*LOW_SPEED
@@ -371,7 +371,8 @@ void moveObject2(spirits* bullet, point initial, double speed, int level, double
 		bullet->x = initial.x;
 		bullet->y = initial.y;
 		if (level == 2) {
-			a *= -1;
+			bullet->coy *= -1;
+			bullet->cox *= -1;
 		}
 	}
 	else {
@@ -411,17 +412,19 @@ void drawBorders(double horizontal_shift, double vertical_shift, int czerwony, S
 
 //run 1. level
 void firstLevel(SDL_Surface* screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed, SDL_Surface* etis[],
-	SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first_en, double screen_borders[]) {
+	SDL_Surface* blue_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first_en, double screen_borders[]) {
 	//static enemy
 	DrawSurface(screen, etis[first_en->side], first_en->x + horizontal_shift, first_en->y + vertical_shift);
 	//enemy - bullets
 	for (int i = 0; i < NB_OF_BULLETS; i++) {
 		//draw bullet
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, ENEMY_X + horizontal_shift, bullets[i].y + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
+		DrawSurface(screen, pink_dot, ENEMY_X + horizontal_shift, bullets[i].y + vertical_shift);
+		DrawSurface(screen, pink_dot, ENEMY_X + horizontal_shift - FACT_PART, bullets[i].y + vertical_shift);
+		DrawSurface(screen, pink_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
+		DrawSurface(screen, pink_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift - FACT_PART);
 		//move bullet
 		moveObject2(&bullets[i], initial, etiSpeed, 1, worldTime);
 	}
@@ -439,16 +442,17 @@ void firstLevel(SDL_Surface* screen, double horizontal_shift, double vertical_sh
 
 //run 2. level
 void secondLevel(SDL_Surface* screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed, SDL_Surface* etis[],
-	SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first_en, double screen_borders[]) {
+	SDL_Surface* blue_dot, SDL_Surface* pink_dot, point initial, spirits bullets[], spirits* first_en, double screen_borders[]) {
 	//static enemy
 	DrawSurface(screen, etis[first_en->side], first_en->x + horizontal_shift, first_en->y + vertical_shift);
 	//enemy - bullets
 	for (int i = 0; i < NB_OF_BULLETS; i++) {
 		//draw bullet
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
-		DrawSurface(screen, yellow_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x + horizontal_shift, bullets[i].y + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x * FACTOR + horizontal_shift, bullets[i].y * FACTOR + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x + horizontal_shift, bullets[i].y * FACTOR - 3 * 2 * FACTOR + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift);
+		DrawSurface(screen, blue_dot, bullets[i].x + horizontal_shift, ENEMY_Y + vertical_shift - 24);
 		//move bullet
 		moveObject2(&bullets[i], initial, etiSpeed, 2, worldTime);
 	}
@@ -508,15 +512,15 @@ void drawStage(SDL_Surface* screen, int colours[], SDL_Surface* texture, double 
 
 //choose correct level function
 void levelChoice(int level, SDL_Surface* screen, double horizontal_shift, double vertical_shift, double worldTime, double etiSpeed,
-	SDL_Surface* etis[], SDL_Surface* yellow_dot, SDL_Surface* pink_dot, point initial, spirits bullets[][NB_OF_BULLETS], spirits* enemies,
+	SDL_Surface* etis[], SDL_Surface* blue_dot, SDL_Surface* pink_dot, point initial, spirits bullets[][NB_OF_BULLETS], spirits* enemies,
 	double screen_borders[]) {
 	if (level == 1) {
-		firstLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, yellow_dot, pink_dot, initial,
+		firstLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, blue_dot, pink_dot, initial,
 			bullets[0], &enemies[0], screen_borders);
 	}
 	else {
 		//etiSpeed = LOW_SPEED;
-		secondLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, yellow_dot, pink_dot, initial,
+		secondLevel(screen, horizontal_shift, vertical_shift, worldTime, etiSpeed, etis, blue_dot, pink_dot, initial,
 			bullets[0], &enemies[0], screen_borders);
 	}
 }
@@ -524,7 +528,7 @@ void levelChoice(int level, SDL_Surface* screen, double horizontal_shift, double
 
 //looping through frames and events
 void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int* t2, double* worldTime, double* distance, double* etiSpeed,
-	SDL_Surface* screen, SDL_Renderer* renderer, SDL_Surface* yellow_dot, SDL_Surface* pink_dot, SDL_Surface* charset, SDL_Texture* scrtex, int colours[],
+	SDL_Surface* screen, SDL_Renderer* renderer, SDL_Surface* blue_dot, SDL_Surface* pink_dot, SDL_Surface* charset, SDL_Texture* scrtex, int colours[],
 	double* fpsTimer, int* frames, double* fps, char text[], double* delta, SDL_Event& event, SDL_Surface* etis[], SDL_Surface* textures[]) {
 
 	double horizontal_shift = 0;
@@ -552,7 +556,7 @@ void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int*
 		//player
 		DrawSurface(screen, etis[player.side], player.x, player.y);
 
-		levelChoice(level, screen, horizontal_shift, vertical_shift, *worldTime, *etiSpeed, etis, yellow_dot, pink_dot, initial, bullets,
+		levelChoice(level, screen, horizontal_shift, vertical_shift, *worldTime, *etiSpeed, etis, blue_dot, pink_dot, initial, bullets,
 			enemies, screen_borders);
 
 		fpsTiming(*delta, fpsTimer, frames, fps);
@@ -566,7 +570,7 @@ void playControl(int* quit, int* new_game, int* x_pos, int* y_pos, int* t1, int*
 
 
 //load images
-int loadBMPs(SDL_Surface* etis[], SDL_Surface** yellow_dot, SDL_Surface** pink_dot, SDL_Surface* background[],
+int loadBMPs(SDL_Surface* etis[], SDL_Surface** blue_dot, SDL_Surface** pink_dot, SDL_Surface* background[],
 	SDL_Renderer* renderer, SDL_Window* window, SDL_Texture* scrtex, SDL_Surface* screen, SDL_Surface** charset) {
 	// wczytanie obrazka cs8x8.bmp
 	*charset = SDL_LoadBMP("./cs8x8.bmp");
@@ -611,9 +615,9 @@ int loadBMPs(SDL_Surface* etis[], SDL_Surface** yellow_dot, SDL_Surface** pink_d
 		return 0;
 	}
 
-	*yellow_dot = SDL_LoadBMP("./yellow.bmp");
-	if (*yellow_dot == NULL) {
-		printf("SDL_LoadBMP(yellow.bmp) error: %s\n", SDL_GetError());
+	*blue_dot = SDL_LoadBMP("./blue.bmp");
+	if (*blue_dot == NULL) {
+		printf("SDL_LoadBMP(blue.bmp) error: %s\n", SDL_GetError());
 		freeingFun(renderer, window, scrtex, screen, *charset);
 		return 0;
 	}
@@ -662,7 +666,7 @@ int main(int argc, char** argv) {
 	double delta, worldTime, fpsTimer, fps, distance, etiSpeed;
 	SDL_Event event;
 	SDL_Surface* screen, * charset = NULL;
-	SDL_Surface* etis[6], * yellow_dot = NULL, * pink_dot = NULL, * backgrounds[NB_OF_LEVELS];
+	SDL_Surface* etis[6], * blue_dot = NULL, * pink_dot = NULL, * backgrounds[NB_OF_LEVELS];
 	SDL_Texture* scrtex;
 	SDL_Window* window;
 	SDL_Renderer* renderer;
@@ -705,7 +709,7 @@ int main(int argc, char** argv) {
 	// wy³¹czenie widocznoœci kursora myszy
 	SDL_ShowCursor(SDL_DISABLE);
 
-	if (loadBMPs(etis, &yellow_dot, &pink_dot, backgrounds, renderer, window, scrtex, screen, &charset)) {
+	if (loadBMPs(etis, &blue_dot, &pink_dot, backgrounds, renderer, window, scrtex, screen, &charset)) {
 		SDL_SetColorKey(charset, true, 0x000000);
 
 		char text[128];
@@ -727,7 +731,7 @@ int main(int argc, char** argv) {
 		SDL_RenderPresent(renderer);
 
 		playControl(&quit, &new_game, &x_pos, &y_pos, &t1, &t2, &worldTime, &distance, &etiSpeed, screen, renderer,
-			yellow_dot, pink_dot, charset, scrtex, rgb, &fpsTimer, &frames, &fps, text, &delta, event, etis, backgrounds);
+			blue_dot, pink_dot, charset, scrtex, rgb, &fpsTimer, &frames, &fps, text, &delta, event, etis, backgrounds);
 
 		freeingFun(renderer, window, scrtex, screen, charset);
 	}
